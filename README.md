@@ -1,2 +1,2 @@
-# workshop-pemrograman-aplikasi
-mata kuliah workshop pemrograman aplikasi membuat aplikasi berbasis dekstop
+# workshop-pengembangan-aplikasi
+mata kuliah workshop pengembangan aplikasi membuat aplikasi berbasis dekstop
