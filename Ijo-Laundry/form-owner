@@ -1,0 +1,457 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package main;
+
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JasperViewer;
+
+/**
+ *
+ * @author Asus
+ */
+public class Form_owner extends javax.swing.JFrame {
+
+    /**
+     * Creates new form tabel_ambilcucian
+     */
+    public Form_owner() {
+        initComponents();
+        setLocationRelativeTo(this);
+        tampilkan_data();
+        tanggal_sekarang();
+        jamDigital();
+        
+         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(screen.width,screen.height);
+        setExtendedState(Frame.MAXIMIZED_BOTH);
+        
+    }
+    
+    public Form_owner(String name){
+        initComponents();
+       jLabel3.setText(name);
+       setLocationRelativeTo(this);
+        tampilkan_data();
+        tanggal_sekarang();
+        jamDigital();
+        
+         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(screen.width,screen.height);
+        setExtendedState(Frame.MAXIMIZED_BOTH);
+    }
+    
+     public void tanggal_sekarang(){
+        Date sekarang = new Date();
+        SimpleDateFormat kal = new SimpleDateFormat("yyyy-MM-dd");
+        tanggal.setText(kal.format(sekarang));
+    }
+    
+    public void jamDigital(){
+        ActionListener taskPerformer = new ActionListener(){
+            @Override
+            public void actionPerformed (ActionEvent ae){
+                String nol_jam = "";
+                String nol_menit = "";
+                String nol_detik = "";
+                
+                // membuat date
+                Date dt = new Date();
+                // megambil nilai jam,menit,detik
+                int nilai_jam = dt.getHours();
+                int nilai_menit = dt.getMinutes();
+                int nilai_detik = dt.getSeconds();
+                // jika nilai jam lebih kecil dari 10 (hanya 1 digit)
+                
+                if (nilai_jam <= 9){
+                    nol_jam ="0";
+                }
+                //jika nilai menit lebih kecil dari 10 (hanya 1 digit)
+                if (nilai_menit <= 9){
+                    nol_menit="0";
+                }
+                //jika nilai detik lebih kecil dari 10 (hanya 1 digit)
+                if (nilai_detik <=9){
+                    nol_detik = "0";
+                }
+        
+                //membuat string jam,menit,detik
+                String Jam = nol_jam + Integer.toString(nilai_jam);
+                String menit = nol_menit + Integer.toString(nilai_menit);
+                String detik = nol_detik + Integer.toString(nilai_detik);
+                
+                //menampilkan pada layar
+                jam.setText(Jam + " : " + menit + " : " + detik + " : ");       
+            }
+        };
+        //timer
+        new Timer(1000,taskPerformer).start();
+    }
+   
+    public void tampilkan_data(){
+         DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("No");
+        model.addColumn("ID Ambil Cucian");
+        model.addColumn("ID Transaksi");
+        model.addColumn("ID Pelanggan");
+        model.addColumn("Nama Pelanggan");
+        model.addColumn("No.Hp/Telp");
+        model.addColumn("Jenis Kelamin");
+        model.addColumn("Alamat");
+        model.addColumn("Tanggal Masuk");
+        model.addColumn("Jenis Laundry");
+        model.addColumn("Harga");
+        model.addColumn("Berat Pakaian");
+        model.addColumn("Total Pembayaran");
+        model.addColumn("Bayar");
+        model.addColumn("Kembalian");
+        model.addColumn("Tanggal Pengembalian");
+        model.addColumn("Status");
+        
+        String cari = tf_cari.getText();
+        try {
+            int no = 1;
+            String sql = "SELECT * FROM tb_ambilcucian WHERE nama_pelanggan LIKE'%"+cari+"%'";
+            java.sql.Connection conn = new Konfigurasi().getConnection();
+            java.sql.Statement stm = conn.createStatement();
+            java.sql.ResultSet rs = stm.executeQuery(sql);
+            
+            while (rs.next()){
+                 model.addRow(new Object[] {no++,rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10),rs.getString(11),rs.getString(12),rs.getString(13),rs.getString(14),rs.getString(15),rs.getString(16)});
+            }
+            tabel_ambilcucian.setModel(model);
+        }  catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+        
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jam = new javax.swing.JLabel();
+        tanggal = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        tf_cari = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabel_ambilcucian = new javax.swing.JTable();
+        btn_kembali = new javax.swing.JButton();
+        btn_laporan = new javax.swing.JButton();
+        btn_user = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        btn_owner = new javax.swing.JButton();
+        btn_karyawan = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(102, 204, 0));
+
+        jLabel18.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel18.setText("JAM");
+
+        jLabel19.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel19.setText("Tanggal");
+
+        jam.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jam.setText("JAM");
+
+        tanggal.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tanggal.setText("Tanggal");
+
+        jLabel22.setFont(new java.awt.Font("Stencil", 1, 24)); // NOI18N
+        jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel22.setText("form Owner");
+
+        jLabel23.setFont(new java.awt.Font("Stencil", 1, 24)); // NOI18N
+        jLabel23.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel23.setText("Ijo Laundry");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel18)
+                .addGap(21, 21, 21)
+                .addComponent(jam)
+                .addGap(71, 71, 71)
+                .addComponent(jLabel19)
+                .addGap(25, 25, 25)
+                .addComponent(tanggal)
+                .addGap(205, 205, 205)
+                .addComponent(jLabel22)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(43, 43, 43))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel18)
+                    .addComponent(jam)
+                    .addComponent(jLabel19)
+                    .addComponent(jLabel23)
+                    .addComponent(tanggal))
+                .addGap(10, 10, 10))
+            .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING)
+        );
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setText("Cari Nama Pelanggan");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 30, -1, -1));
+
+        tf_cari.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tf_cari.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tf_cariKeyReleased(evt);
+            }
+        });
+        jPanel2.add(tf_cari, new org.netbeans.lib.awtextra.AbsoluteConstraints(1160, 30, 186, -1));
+
+        tabel_ambilcucian.setBackground(new java.awt.Color(102, 204, 0));
+        tabel_ambilcucian.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tabel_ambilcucian);
+
+        jPanel2.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 1340, 193));
+
+        btn_kembali.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btn_kembali.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/arrow-94-24.png"))); // NOI18N
+        btn_kembali.setText("kembali");
+        btn_kembali.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_kembaliActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_kembali, new org.netbeans.lib.awtextra.AbsoluteConstraints(22, 11, -1, -1));
+
+        btn_laporan.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btn_laporan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/report-3-48.png"))); // NOI18N
+        btn_laporan.setText("Laporan");
+        btn_laporan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_laporanActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_laporan, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 170, 82));
+
+        btn_user.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btn_user.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/conference-call-48 (1).png"))); // NOI18N
+        btn_user.setText("User");
+        btn_user.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_userActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_user, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 400, 190, 80));
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel3.setText("owner");
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 20, -1, -1));
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel2.setText("Pemilik");
+        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 20, -1, -1));
+
+        btn_owner.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btn_owner.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/conference-48.png"))); // NOI18N
+        btn_owner.setText("Data Owner");
+        btn_owner.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_ownerActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_owner, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 400, 190, 80));
+
+        btn_karyawan.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btn_karyawan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/conference-48.png"))); // NOI18N
+        btn_karyawan.setText("Data Karyawan");
+        btn_karyawan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_karyawanActionPerformed(evt);
+            }
+        });
+        jPanel2.add(btn_karyawan, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 400, 190, 80));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1364, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    private void tf_cariKeyReleased(java.awt.event.KeyEvent evt) {                                    
+        // TODO add your handling code here:
+        tampilkan_data();
+    }                                   
+
+    private void btn_kembaliActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        // TODO add your handling code here:
+        {
+    new Home().setVisible(true);
+    dispose();
+    }
+    }                                           
+
+    private void btn_laporanActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        // TODO add your handling code here:
+        JasperReport report;
+        
+        String path = ".\\src\\report\\Laporan_Ambil_Cucian.jasper";
+        try {
+            report = (JasperReport) JRLoader.loadObjectFromFile(path);
+            JasperPrint jprint = JasperFillManager.fillReport(path,null,main.Konfigurasi.getConnection());
+            JasperViewer jviewer = new JasperViewer(jprint,false);
+            jviewer.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            jviewer.setVisible(true);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+        
+    }                                           
+
+    private void btn_userActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+        {
+            new Form_multiuser().setVisible(true);
+            dispose();
+        }
+    }                                        
+
+    private void btn_karyawanActionPerformed(java.awt.event.ActionEvent evt) {                                             
+        // TODO add your handling code here:
+        {
+    new Form_karyawan().setVisible(true);
+    dispose();
+    }
+    }                                            
+
+    private void btn_ownerActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        // TODO add your handling code here:
+        {
+    new Data_Owner().setVisible(true);
+    dispose();
+    }
+    }                                         
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Form_owner.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Form_owner.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Form_owner.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Form_owner.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Form_owner().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JButton btn_karyawan;
+    private javax.swing.JButton btn_kembali;
+    private javax.swing.JButton btn_laporan;
+    private javax.swing.JButton btn_owner;
+    private javax.swing.JButton btn_user;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jam;
+    private javax.swing.JTable tabel_ambilcucian;
+    private javax.swing.JLabel tanggal;
+    private javax.swing.JTextField tf_cari;
+    // End of variables declaration                   
+}
