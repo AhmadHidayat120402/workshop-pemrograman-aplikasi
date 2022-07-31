@@ -1,0 +1,580 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package konfigurasi;
+
+import konfigurasi.konfig;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Toolkit;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
+
+
+
+/**
+ *
+ * @author Asus
+ */
+public class Form_Utama extends javax.swing.JFrame {
+
+    /**
+     * Creates new form Form_Utama
+     */
+    public Form_Utama() {
+        initComponents();
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(screen.width,screen.height);
+        setExtendedState(Frame.MAXIMIZED_BOTH);
+        tampil_tb_mahasiswa();
+        tampil_tb_buku();
+        tampil_tb_peminjaman();
+        tanggal_sekarang();
+        jamDigital();
+        setLocationRelativeTo(this);
+        
+    }
+    
+    public void tanggal_sekarang(){
+        Date sekarang = new Date();
+        SimpleDateFormat kal = new SimpleDateFormat("yyyy-MM-dd");
+        lbl_tanggal.setText(kal.format(sekarang));
+    }
+    
+    public void jamDigital(){
+        ActionListener taskPerformer = new ActionListener(){
+            @Override
+            public void actionPerformed (ActionEvent ae){
+                String nol_jam = "";
+                String nol_menit = "";
+                String nol_detik = "";
+                
+                // membuat date
+                Date dt = new Date();
+                // megambil nilai jam,menit,detik
+                int nilai_jam = dt.getHours();
+                int nilai_menit = dt.getMinutes();
+                int nilai_detik = dt.getSeconds();
+                // jika nilai jam lebih kecil dari 10 (hanya 1 digit)
+                
+                if (nilai_jam <= 9){
+                    nol_jam ="0";
+                }
+                //jika nilai menit lebih kecil dari 10 (hanya 1 digit)
+                if (nilai_menit <= 9){
+                    nol_menit="0";
+                }
+                //jika nilai detik lebih kecil dari 10 (hanya 1 digit)
+                if (nilai_detik <=9){
+                    nol_detik = "0";
+                }
+        
+                //membuat string jam,menit,detik
+                String jam = nol_jam + Integer.toString(nilai_jam);
+                String menit = nol_menit + Integer.toString(nilai_menit);
+                String detik = nol_detik + Integer.toString(nilai_detik);
+                
+                //menampilkan pada layar
+                lbl_jam.setText(jam + " : " + menit + " : " + detik + " : ");       
+            }
+        };
+        //timer
+        new Timer(1000,taskPerformer).start();
+    }
+    
+    private DefaultTableModel tabmode;
+    private String cari_kode_buku = "";
+    //cari data di tabel
+    
+    public void cari_tb_peminjaman(){
+        cari_kode_buku = txt_cari.getText().toString();
+        Object [] baris = {"kode_buku","judul_buku","tanggal_terbit","pengarang"};
+        tabmode = new DefaultTableModel(null,baris);
+        tabel_view.setModel(tabmode);
+        Connection con = new konfig().getConnection();
+        try {
+            String sql = "SELECT * FROM peminjaman order by nim asc";
+            java.sql.Statement stat = con.createStatement();
+            java.sql.ResultSet hasil = stat.executeQuery(sql);
+            while (hasil.next()){
+                String nim = hasil.getString("nim");
+                String nama = hasil.getString("nama");
+                String jurusan = hasil.getString("jurusan");
+                String kode_buku = hasil.getString("kode_buku");
+                String judul = hasil.getString("judul_buku");
+                String tanggal_terbit = hasil.getString("tanggal_terbit");
+                String tanggal_pinjam = hasil.getString("tanggal_pinjam");
+                String [] data = {nim , nama,jurusan,kode_buku,judul, tanggal_terbit ,tanggal_pinjam};
+                tabmode.addRow(data);
+            }
+        } catch (Exception e) {
+            JOptionPane.showConfirmDialog(null, e);
+            JOptionPane.showMessageDialog(null, "Menampilkan data gagal","Informasi",JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
+    
+    public void cari_tb_buku (){
+        cari_kode_buku = txt_cari.getText().toString();
+        Object [] baris = {"kode_buku","judul_buku","tanggal_terbit","pengarang"};
+        tabmode = new DefaultTableModel(null,baris);
+        tabel_view.setModel(tabmode);
+        Connection con = new konfig().getConnection();
+        try {
+            String sql = "SELECT * FROM buku where kode_buku LIKE '%" + cari_kode_buku+"%'";
+            java.sql.Statement stat = con.createStatement();
+            java.sql.ResultSet hasil = stat.executeQuery(sql);
+            while (hasil.next()){
+                String kode_buku = hasil.getString("kode_buku");
+                String judul = hasil.getString("judul_buku");
+                String tanggal_terbit = hasil.getString("tanggal_terbit");
+                String pengarang = hasil.getString("pengarang");
+                String [] data = {kode_buku , judul, tanggal_terbit , pengarang};
+                tabmode.addRow(data);
+            }
+        } catch (Exception e) {
+            JOptionPane.showConfirmDialog(null, e);
+            JOptionPane.showMessageDialog(null, "Menampilkan data gagal","Informasi",JOptionPane.INFORMATION_MESSAGE);
+        }
+      }
+    
+    
+    public void tampil_tb_peminjaman(){
+        Object [] baris = {"Kode Buku","Judul Buku","Tanggal Terbit","Pengarang"};
+        tabmode = new DefaultTableModel(null,baris);
+        tabel_view.setModel(tabmode);
+        Connection con = new konfig().getConnection();
+       try {
+            String sql = "SELECT * FROM peminjaman order by nim asc";
+            java.sql.Statement stat = con.createStatement();
+            java.sql.ResultSet hasil = stat.executeQuery(sql);
+            while (hasil.next()){
+                String nim = hasil.getString("nim");
+                String nama = hasil.getString("nama");
+                String jurusan = hasil.getString("jurusan");
+                String kode_buku = hasil.getString("kode_buku");
+                String judul = hasil.getString("judul_buku");
+                String tanggal_terbit = hasil.getString("tanggal_terbit");
+                String tanggal_pinjam = hasil.getString("tanggal_pinjam");
+                String [] data = {nim , nama,jurusan,kode_buku,judul, tanggal_terbit ,tanggal_pinjam};
+                tabmode.addRow(data);
+            }
+        } catch (Exception e) {
+            JOptionPane.showConfirmDialog(null, e);
+            JOptionPane.showMessageDialog(null, "Menampilkan data gagal","Informasi",JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+    
+    public void tampil_tb_mahasiswa(){
+         Object [] baris = {"nim","nama","alamat","no_telp","tgl_lahir","jenis_kelamin"};
+        tabmode = new DefaultTableModel(null,baris);
+        tabel_view.setModel(tabmode);
+        Connection con = new konfig().getConnection();
+        try {
+            String sql = "SELECT * FROM mahasiswa order by nim asc ";
+            java.sql.Statement stat = con.createStatement();
+            java.sql.ResultSet hasil = stat.executeQuery(sql);
+            while (hasil.next()){
+                String nim = hasil.getString("nim");
+                String nama = hasil.getString("nama");
+                String alamat = hasil.getString("alamat");
+                String no_telp = hasil.getString("no_telp");
+                String Tanggal_Lahir = hasil.getString("tgl_lahir");
+                String jenis_kelamin = hasil.getString("jenis_kelamin");
+                String [] data = {nim , nama, alamat , no_telp,Tanggal_Lahir,jenis_kelamin};
+                tabmode.addRow(data);
+            }
+        } catch (Exception e) {
+            JOptionPane.showConfirmDialog(null, e);
+            JOptionPane.showMessageDialog(null, "Menampilkan data gagal","Informasi",JOptionPane.INFORMATION_MESSAGE);
+        }  
+    }
+    
+    public void tampil_tb_buku(){
+        Object [] baris = {"kode_buku","judul_buku","tanggal_terbit","pengarang"};
+        tabmode = new DefaultTableModel(null,baris);
+        tabel_view.setModel(tabmode);
+        Connection con = new konfig().getConnection();
+        try {
+            String sql = "SELECT * FROM buku order by kode_buku asc ";
+            java.sql.Statement stat = con.createStatement();
+            java.sql.ResultSet hasil = stat.executeQuery(sql);
+            while (hasil.next()){
+                String kodebuku = hasil.getString("kode_buku");
+                String judulbuku = hasil.getString("judul_buku");
+                String tanggalterbit = hasil.getString("tanggal_terbit");
+                String pengarang = hasil.getString("pengarang");
+                String [] data = {kodebuku,judulbuku,tanggalterbit,pengarang};
+                tabmode.addRow(data);
+            }
+        } catch (Exception e) {
+            JOptionPane.showConfirmDialog(null, e);
+            JOptionPane.showMessageDialog(null, "Menampilkan data gagal","Informasi",JOptionPane.INFORMATION_MESSAGE);
+        }  
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        jCheckBox1 = new javax.swing.JCheckBox();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        peminjamanEvent = new javax.swing.JLabel();
+        bukuEvent = new javax.swing.JLabel();
+        mahasiswaEvent = new javax.swing.JLabel();
+        lbl_jam = new javax.swing.JLabel();
+        lbl_tanggal = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabel_view = new javax.swing.JTable();
+        btn_refresh = new javax.swing.JButton();
+        btn_edit = new javax.swing.JButton();
+        lbl_tittle = new javax.swing.JLabel();
+        txt_cari = new javax.swing.JTextField();
+        btn_cari = new javax.swing.JButton();
+
+        jCheckBox1.setText("jCheckBox1");
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 153));
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel1.setText("Aplikasi Perpustakaan");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(245, 245, 245)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addComponent(jLabel1)
+                .addContainerGap(47, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBackground(new java.awt.Color(255, 204, 0));
+
+        jLabel3.setText("JAM");
+
+        jLabel2.setText("TANGGAL");
+
+        peminjamanEvent.setText("Peminjaman");
+        peminjamanEvent.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                peminjamanEventMouseClicked(evt);
+            }
+        });
+
+        bukuEvent.setText("Buku");
+        bukuEvent.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                bukuEventMouseClicked(evt);
+            }
+        });
+
+        mahasiswaEvent.setText("Mahasiswa");
+        mahasiswaEvent.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mahasiswaEventMouseClicked(evt);
+            }
+        });
+
+        lbl_jam.setText("JAM");
+
+        lbl_tanggal.setText("TANGGAL");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(peminjamanEvent)
+                .addGap(18, 18, 18)
+                .addComponent(bukuEvent)
+                .addGap(18, 18, 18)
+                .addComponent(mahasiswaEvent)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 509, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addGap(18, 18, 18)
+                .addComponent(lbl_jam)
+                .addGap(55, 55, 55)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lbl_tanggal)
+                .addGap(59, 59, 59))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2)
+                    .addComponent(peminjamanEvent)
+                    .addComponent(bukuEvent)
+                    .addComponent(mahasiswaEvent)
+                    .addComponent(lbl_jam)
+                    .addComponent(lbl_tanggal))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel3.setBackground(new java.awt.Color(255, 204, 0));
+
+        tabel_view.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tabel_view);
+
+        btn_refresh.setText("REFRESH");
+        btn_refresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_refreshActionPerformed(evt);
+            }
+        });
+
+        btn_edit.setText("EDIT DATA");
+        btn_edit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_editActionPerformed(evt);
+            }
+        });
+
+        lbl_tittle.setText("DATA PEMINJAMAN");
+
+        txt_cari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_cariActionPerformed(evt);
+            }
+        });
+        txt_cari.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txt_cariKeyReleased(evt);
+            }
+        });
+
+        btn_cari.setText("CARI");
+        btn_cari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cariActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(btn_edit)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btn_refresh)))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(lbl_tittle)
+                .addGap(98, 98, 98)
+                .addComponent(txt_cari, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btn_cari)
+                .addGap(27, 27, 27))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_tittle)
+                    .addComponent(txt_cari, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE)
+                    .addComponent(btn_cari))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_edit)
+                    .addComponent(btn_refresh))
+                .addGap(19, 19, 19))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>                        
+    public String kirim = "";
+    private void peminjamanEventMouseClicked(java.awt.event.MouseEvent evt) {                                             
+        // TODO add your handling code here:
+        tampil_tb_peminjaman();
+        kirim = "Form_Entry_Peminjaman";
+        btn_edit.setText("EDIT DATA PEMINJAMAN");
+        lbl_tittle.setText("DATA PEMINJAMAN");
+    }                                            
+
+    private void bukuEventMouseClicked(java.awt.event.MouseEvent evt) {                                       
+        // TODO add your handling code here:
+        tampil_tb_buku();
+        kirim = "Form_entry_buku";
+        btn_edit.setText("EDIT DATA BUKU");
+        lbl_tittle.setText("DATA BUKU");
+    }                                      
+
+    private void mahasiswaEventMouseClicked(java.awt.event.MouseEvent evt) {                                            
+        // TODO add your handling code here:
+        tampil_tb_mahasiswa();
+        kirim = "Form_entry_mahasiswa";
+        lbl_tittle.setText("DATA MAHASISWA");
+        btn_edit.setText("EDIT DATA MAHASISWA");
+    }                                           
+
+    private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+        if (kirim == "Form_Entry_Peminjaman"){
+            new Form_Entry_Peminjaman().setVisible(true);
+        }else if (kirim == "Form_entry_buku"){
+            new Form_entry_buku().setVisible(true);
+        }else if (kirim == "Form_entry_mahasiswa"){
+            new Form_entry_mahasiswa().setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "Form tidak terdeteksi, klik form terlebih dahulu!!!");
+        }
+        
+    }                                        
+
+    private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        // TODO add your handling code here:
+        if(kirim == "Form_Entry_Peminjaman"){
+            tampil_tb_peminjaman();
+        } else if (kirim == "Form_entry_buku"){
+            tampil_tb_buku();
+        } else if (kirim == "Form_entry_mahasiswa"){
+            tampil_tb_mahasiswa();
+        } else{
+            JOptionPane.showMessageDialog(null, "Refresh tidak terdeteksi, klik form terlebih dahulu!!!");
+        }
+    }                                           
+
+    private void txt_cariKeyReleased(java.awt.event.KeyEvent evt) {                                     
+        // TODO add your handling code here:
+        cari_tb_buku();
+    }                                    
+
+    private void txt_cariActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+    }                                        
+
+    private void btn_cariActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        // TODO add your handling code here:
+        txt_cari.getText().toString();
+    }                                        
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Form_Utama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Form_Utama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Form_Utama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Form_Utama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Form_Utama().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JButton btn_cari;
+    private javax.swing.JButton btn_edit;
+    private javax.swing.JButton btn_refresh;
+    private javax.swing.JLabel bukuEvent;
+    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lbl_jam;
+    private javax.swing.JLabel lbl_tanggal;
+    private javax.swing.JLabel lbl_tittle;
+    private javax.swing.JLabel mahasiswaEvent;
+    private javax.swing.JLabel peminjamanEvent;
+    private javax.swing.JTable tabel_view;
+    private javax.swing.JTextField txt_cari;
+    // End of variables declaration                   
+}
